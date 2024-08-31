@@ -4,7 +4,6 @@ Neutralino.init();
 function onWindowClose() {
   Neutralino.app.exit();
 }
-
 // Register event listeners
 
 Neutralino.events.on("windowClose", onWindowClose);
@@ -84,9 +83,26 @@ document.addEventListener("DOMContentLoaded", async (e) => {
   });
 
   // Range Input control Volume
+  const volumeValue = document.querySelector(".volume-value");
+  const volumeIcon = document.querySelector(".volume-icon");
   range.addEventListener("input", (e) => {
     const rangeValue = e.target.value / 100;
     audio.volume = rangeValue;
+    const rangePercent = Math.floor(rangeValue * 100);
+    volumeValue.textContent = `${rangePercent}%`;
+    if (rangePercent === 0) {
+      volumeIcon.classList.remove("fa-volume-down");
+      volumeIcon.classList.remove("fa-volume-up");
+      volumeIcon.classList.add("fa-volume-mute");
+    } else if (rangePercent <= 50) {
+      volumeIcon.classList.add("fa-volume-down");
+      volumeIcon.classList.remove("fa-volume-up");
+      volumeIcon.classList.remove("fa-volume-mute");
+    } else {
+      volumeIcon.classList.remove("fa-volume-down");
+      volumeIcon.classList.add("fa-volume-up");
+      volumeIcon.classList.remove("fa-volume-mute");
+    }
   });
 
   // Helper Function to get file details
