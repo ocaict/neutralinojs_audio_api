@@ -6,6 +6,7 @@
     <title>OcaMedia</title>
     <link rel="stylesheet" href="./css/index.css" />
     <link rel="stylesheet" href="fontawesome-free-6.4.0-web/css/all.min.css" />
+    <link rel="shortcut icon" href="appIcon.png" type="image/png" />
   </head>
   <body>
     <div class="container media-container">
@@ -72,7 +73,12 @@
           placeholder="Enter stream/audio url"
         />
       </div>
-      <small class="notice"></small>
+      <div class="error-container">
+        <button class="btn close-error-btn">
+          <i class="fa-solid fa-times"></i>
+        </button>
+        <div class="message-container"></div>
+      </div>
     </div>
 
     <script src="js/neutralino.js"></script>

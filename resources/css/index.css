@@ -271,3 +271,32 @@ input[type="range"]:focus::-webkit-slider-thumb {
   outline: 1px solid #053a5f;
   outline-offset: 0.125rem;
 }
+
+.error-container {
+  position: fixed;
+  background-color: rgb(240, 240, 240);
+  box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.4);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 300;
+  width: 200px;
+  padding: 10px;
+  border-radius: 5px;
+  transition: all 0.4s linear;
+  display: none;
+}
+.close-error-btn {
+  background-color: rgb(240, 240, 240);
+  position: absolute;
+  right: 0;
+  top: 0;
+  border: 0;
+  box-shadow: none;
+  color: red;
+  z-index: 200;
+  width: 24px;
+  height: 24px;
+  font-size: 1.2rem;
+  border-radius: 5px;
+}

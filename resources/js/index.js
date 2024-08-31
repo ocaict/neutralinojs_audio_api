@@ -13,7 +13,6 @@ document.addEventListener("DOMContentLoaded", async (e) => {
 
   const minimizeBtn = document.querySelector(".btn-minimize");
   const closeBtn = document.querySelector(".btn-close");
-
   const mediaHeader = document.querySelector(".header");
   const mediaHeaderBtns = document.querySelector(".header-btn-group");
   const detailsContainer = document.querySelector(".details-container");
@@ -25,6 +24,8 @@ document.addEventListener("DOMContentLoaded", async (e) => {
   const streamInput = document.querySelector(".stream");
   const fileNameContainer = document.querySelector(".file-name");
   const toggleRepeatBtn = document.querySelector(".toggle-repeat-btn");
+  const errorContainer = document.querySelector(".error-container");
+  const closeErrorBtn = document.querySelector(".close-error-btn");
 
   // Global Variables
   let file = null;
@@ -33,6 +34,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     fileName: "Oca Media Intro",
   };
   let repeat = false;
+  let volume = 50;
 
   // Audio Constructor
   const audio = new Audio(defaultAudio);
@@ -88,6 +90,8 @@ document.addEventListener("DOMContentLoaded", async (e) => {
   range.addEventListener("input", (e) => {
     const rangeValue = e.target.value / 100;
     audio.volume = rangeValue;
+
+    volume = rangeValue * 100;
     const rangePercent = Math.floor(rangeValue * 100);
     volumeValue.textContent = `${rangePercent}%`;
     if (rangePercent === 0) {
@@ -122,12 +126,12 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     const acceptedExtensions = ["mp3", "wav", "amr", "wav"];
 
     if (!acceptedExtensions.includes(ext)) {
-      alert("File Format Not Supported");
+      showError(undefined, "File Format Not Supported", undefined);
       return;
     }
 
     if (size > 40) {
-      alert("File Too Large");
+      showError(undefined, "File Too Large", undefined);
       return;
     }
 
@@ -170,7 +174,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
 
   // Error Handler
   audio.onerror = () => {
-    alert("Something Went Wrong");
+    showError(undefined, "Error: Unknown Audio Source", undefined);
   };
 
   streamInput.addEventListener("change", (e) => {
@@ -202,8 +206,95 @@ document.addEventListener("DOMContentLoaded", async (e) => {
       return pauseAudio();
     }
   });
+
+  document.addEventListener("wheel", (e) => {
+    const y = e.deltaY;
+
+    if (y == 100) {
+      volume -= 1;
+      if (volume < 0) {
+        volume = 0;
+      }
+    } else if (y == -100) {
+      volume += 1;
+      if (volume > 100) {
+        volume = 100;
+      }
+    }
+    audio.volume = volume / 100;
+    range.value = volume;
+    const volumePercent = Math.floor(volume);
+    volumeValue.textContent = `${volumePercent}%`;
+
+    if (volumePercent === 0) {
+      volumeIcon.classList.remove("fa-volume-down");
+      volumeIcon.classList.remove("fa-volume-up");
+      volumeIcon.classList.add("fa-volume-mute");
+    } else if (volumePercent <= 50) {
+      volumeIcon.classList.add("fa-volume-down");
+      volumeIcon.classList.remove("fa-volume-up");
+      volumeIcon.classList.remove("fa-volume-mute");
+    } else {
+      volumeIcon.classList.remove("fa-volume-down");
+      volumeIcon.classList.add("fa-volume-up");
+      volumeIcon.classList.remove("fa-volume-mute");
+    }
+  });
+
+  async function showError(
+    title = "Error!",
+    message = "Something went wrong!",
+    icon = "ERROR"
+  ) {
+    await Neutralino.os.showMessageBox(title, message, "OK", icon);
+
+    // const messageContainer = errorContainer.querySelector(".message-container");
+    // messageContainer.innerHTML = `<small class="notice">${message}</small>`;
+
+    // errorContainer.style.display = "block";
+  }
+  async function showAbout(
+    title = "Error!",
+    message = "Something went wrong!",
+    icon = "ERROR"
+  ) {
+    const messageContainer = errorContainer.querySelector(".message-container");
+    messageContainer.innerHTML = `<small class="notice">${message}</small>`;
+
+    errorContainer.style.display = "block";
+  }
+
+  closeErrorBtn.addEventListener("click", () => {
+    errorContainer.style.display = "none";
+  });
+
   await Neutralino.window.setDraggableRegion(mediaHeader);
-  await Neutralino.window.unsetDraggableRegion(mediaHeaderBtns);
+
+  let tray = {
+    icon: "/resources/icons/appIcon.png",
+    menuItems: [
+      { id: "about", text: "About" },
+      { text: "-" },
+      { id: "setting", text: "Setting...", isChecked: false },
+      { text: "-" },
+      { id: "quit", text: "Quit" },
+    ],
+  };
+
+  await Neutralino.os.setTray(tray);
+
+  function onTrayMenuItemClicked(event) {
+    if (event.detail.id === "quit") return Neutralino.app.exit();
+    else if (event.detail.id === "about") {
+      return showAbout(
+        "Ocamedia",
+        "Player Audio Media File with Ocamedia Player"
+      );
+    } else if (event.detail.id === "setting") {
+      console.log("Setting");
+    }
+  }
+  await Neutralino.events.on("trayMenuItemClicked", onTrayMenuItemClicked);
 });
 
 window.addEventListener("contextmenu", (e) => e.preventDefault());
