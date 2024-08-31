@@ -1,0 +1,13 @@
+{
+  "name": "practice",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "neu run dev",
+    "build": "neu build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

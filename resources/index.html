@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OcaMedia</title>
+    <link rel="stylesheet" href="./css/index.css" />
+    <link rel="stylesheet" href="fontawesome-free-6.4.0-web/css/all.min.css" />
+  </head>
+  <body>
+    <div class="container media-container">
+      <header class="text header">
+        <i class="app-icon fa-solid fa-volume-high"></i>
+        <small class="header-title"
+          >Select Audio from your system to Play</small
+        >
+      </header>
+      <div class="header-btn-group">
+        <button class="btn btn-minimize">-</button>
+        <button class="btn btn-close">X</button>
+      </div>
+      <div class="player-container">
+        <div class="file-container">
+          <div><label title="Select Audio" for="file">Open</label></div>
+          <h2 class="title">OcaMedia</h2>
+          <input type="file" name="file" id="file" accept="audio/*" />
+        </div>
+        <div class="details-container">
+          <p class="file-name">OcaMedia</p>
+        </div>
+        <div class="btn-container">
+          <div class="btns">
+            <button title="Play" class="btn play-pause-btn">
+              <i class="fa-solid fa-play"></i>
+            </button>
+            <button title="Prev" class="btn prev-btn" disabled>
+              <i class="fa-solid fa-backward-fast"></i>
+            </button>
+            <button title="Stop" class="btn stop-btn">
+              <i class="fa-solid fa-stop"></i>
+            </button>
+            <button title="Next" class="btn next-btn" disabled>
+              <i class="fa-solid fa-forward-fast"></i>
+            </button>
+            <button title="Toggle Repeat" class="btn toggle-repeat-btn">
+              <i class="fa-solid fa-repeat"></i>
+            </button>
+          </div>
+          <div class="volume-container">
+            <input
+              title="Volume"
+              id="range"
+              type="range"
+              class="range"
+              max="100"
+              min="1"
+              value="50"
+              step="0.1"
+            />
+          </div>
+        </div>
+      </div>
+      <div class="stream-container">
+        <label for="stream">Stream:</label>
+        <input
+          type="text"
+          class="stream"
+          placeholder="Enter stream/audio url"
+        />
+      </div>
+      <small class="notice"></small>
+    </div>
+
+    <script src="js/neutralino.js"></script>
+    <!-- Your app's source files -->
+
+    <script src="./js/index.js" type="module"></script>
+  </body>
+</html>
