@@ -11,7 +11,7 @@
   "tokenSecurity": "one-time",
   "logging": {
     "enabled": true,
-    "writeToLogFile": true
+    "writeToLogFile": false
   },
   "nativeAllowList": ["app.*", "os.*", "debug.log", "filesystem.*", "window.*"],
   "globalVariables": {
@@ -33,12 +33,13 @@
       "fullScreen": false,
       "alwaysOnTop": false,
       "icon": "/resources/icons/appIcon.png",
-      "enableInspector": true,
+      "enableInspector": false,
       "borderless": true,
       "maximize": false,
-      "hidden": false,
+      "hidden": true,
       "resizable": false,
-      "exitProcessOnClose": false
+      "exitProcessOnClose": false,
+      "transparent": true
     },
     "browser": {
       "globalVariables": {

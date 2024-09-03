@@ -13,10 +13,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
 
   const minimizeBtn = document.querySelector(".btn-minimize");
   const closeBtn = document.querySelector(".btn-close");
-  const mediaHeader = document.querySelector(".header");
-  const mediaHeaderBtns = document.querySelector(".header-btn-group");
   const detailsContainer = document.querySelector(".details-container");
-
   const playPauseBtn = document.querySelector(".play-pause-btn");
   const stopBtn = document.querySelector(".stop-btn");
   const range = document.querySelector(".range");
@@ -29,7 +26,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
 
   // Global Variables
   let file = null;
-  const defaultAudio = "../files/ad.mp3";
+  // const defaultAudio = "../files/ad.mp3";
   const details = {
     fileName: "Oca Media Intro",
   };
@@ -37,7 +34,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
   let volume = 50;
 
   // Audio Constructor
-  const audio = new Audio(defaultAudio);
+  const audio = new Audio();
 
   const setPlayImage = () => {
     detailsContainer.style.background = `url(../images/wave2.gif) no-repeat center center`;
@@ -72,6 +69,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
   };
 
   playPauseBtn.addEventListener("click", () => {
+    if (!audio.src) return fileInput.click();
     if (audio.paused) {
       playAudio();
     } else {
@@ -83,16 +81,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
   stopBtn.addEventListener("click", () => {
     stopAudio();
   });
-
-  // Range Input control Volume
-  const volumeValue = document.querySelector(".volume-value");
-  const volumeIcon = document.querySelector(".volume-icon");
-  range.addEventListener("input", (e) => {
-    const rangeValue = e.target.value / 100;
-    audio.volume = rangeValue;
-
-    volume = rangeValue * 100;
-    const rangePercent = Math.floor(rangeValue * 100);
+  const showVolumeIcon = (rangePercent) => {
     volumeValue.textContent = `${rangePercent}%`;
     if (rangePercent === 0) {
       volumeIcon.classList.remove("fa-volume-down");
@@ -107,6 +96,17 @@ document.addEventListener("DOMContentLoaded", async (e) => {
       volumeIcon.classList.add("fa-volume-up");
       volumeIcon.classList.remove("fa-volume-mute");
     }
+  };
+  // Range Input control Volume
+  const volumeValue = document.querySelector(".volume-value");
+  const volumeIcon = document.querySelector(".volume-icon");
+  range.addEventListener("input", (e) => {
+    const rangeValue = e.target.value / 100;
+    audio.volume = rangeValue;
+
+    volume = rangeValue * 100;
+    const rangePercent = Math.floor(rangeValue * 100);
+    showVolumeIcon(rangePercent);
   });
 
   // Helper Function to get file details
@@ -224,21 +224,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     audio.volume = volume / 100;
     range.value = volume;
     const volumePercent = Math.floor(volume);
-    volumeValue.textContent = `${volumePercent}%`;
-
-    if (volumePercent === 0) {
-      volumeIcon.classList.remove("fa-volume-down");
-      volumeIcon.classList.remove("fa-volume-up");
-      volumeIcon.classList.add("fa-volume-mute");
-    } else if (volumePercent <= 50) {
-      volumeIcon.classList.add("fa-volume-down");
-      volumeIcon.classList.remove("fa-volume-up");
-      volumeIcon.classList.remove("fa-volume-mute");
-    } else {
-      volumeIcon.classList.remove("fa-volume-down");
-      volumeIcon.classList.add("fa-volume-up");
-      volumeIcon.classList.remove("fa-volume-mute");
-    }
+    showVolumeIcon(volumePercent);
   });
 
   async function showError(
@@ -268,14 +254,14 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     errorContainer.style.display = "none";
   });
 
-  await Neutralino.window.setDraggableRegion(mediaHeader);
+  await Neutralino.window.setDraggableRegion("header");
 
   let tray = {
     icon: "/resources/icons/appIcon.png",
     menuItems: [
       { id: "about", text: "About" },
       { text: "-" },
-      { id: "setting", text: "Setting...", isChecked: false },
+      { id: "top", text: "Always On Top", isChecked: false },
       { text: "-" },
       { id: "quit", text: "Quit" },
     ],
@@ -283,18 +269,30 @@ document.addEventListener("DOMContentLoaded", async (e) => {
 
   await Neutralino.os.setTray(tray);
 
-  function onTrayMenuItemClicked(event) {
+  async function onTrayMenuItemClicked(event) {
     if (event.detail.id === "quit") return Neutralino.app.exit();
     else if (event.detail.id === "about") {
       return showAbout(
         "Ocamedia",
         "Player Audio Media File with Ocamedia Player"
       );
-    } else if (event.detail.id === "setting") {
-      console.log("Setting");
+    } else if (event.detail.id === "top") {
+      const item = tray.menuItems.find((btn) => btn.id === "top");
+      item.isChecked = !event.detail.isChecked;
+
+      if (item.isChecked) {
+        await Neutralino.window.setAlwaysOnTop(true);
+      } else {
+        await Neutralino.window.setAlwaysOnTop(false);
+      }
+      await Neutralino.os.setTray(tray);
     }
   }
   await Neutralino.events.on("trayMenuItemClicked", onTrayMenuItemClicked);
 });
 
 window.addEventListener("contextmenu", (e) => e.preventDefault());
+
+Neutralino.events.on("ready", async () => {
+  Neutralino.window.show();
+});
